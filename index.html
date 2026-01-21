@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Dynamic Backgrounds -->
+    <div class="background-container">
+        <div class="bg-layer id-night" style="opacity: 1;"></div>
+        <div class="bg-layer id-sunrise" style="opacity: 0;"></div>
+        <div class="bg-layer id-day" style="opacity: 0;"></div>
+        <div class="bg-layer id-sunset" style="opacity: 0;"></div>
+    </div>
+
+    <main>
+        <!-- Section 1: Intro (Night -> Sunrise) -->
+        <section id="intro" class="section">
+            <div class="sun-container">
+                <div class="sun"></div>
+            </div>
+            <div class="content fade-in">
+                <h1 class="turkish-quote">Kalbime sızan gün ışığımın<br>doğum günü kutlu olsun</h1>
+            </div>
+        </section>
+
+        <!-- Section 2: Poetry (Sunrise -> Day) -->
+        <section id="poetry" class="section">
+            <div class="content fade-in">
+                <h2>After you, everything became brighter.</h2>
+                <p class="verse">In the quiet of the morning,<br>you are the first light.</p>
+                <p class="verse">Chasing away the shadows,<br>painting my world in gold.</p>
+            </div>
+        </section>
+
+        <!-- Section 3: Sun Rays (Day) -->
+        <section id="rays" class="section">
+            <div class="content fade-in">
+                <h2>You are my...</h2>
+                <div class="rays-container">
+                    <div class="ray-item" data-text="Your smile warms the coldest days.">Warmth</div>
+                    <div class="ray-item" data-text="You show me the way when I am lost.">Guidance</div>
+                    <div class="ray-item" data-text="With you, anything is possible.">Hope</div>
+                    <div class="ray-item" data-text="My safe harbor in the storm.">Peace</div>
+                </div>
+                <div id="ray-message" class="ray-message"></div>
+            </div>
+        </section>
+
+        <!-- Section 4: Sunset (Day -> Sunset) -->
+        <section id="sunset" class="section">
+            <div class="content fade-in">
+                <p class="final-message">The sun sets, but the light you brought into my life remains forever.</p>
+                <p class="signature">With all my love.</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
