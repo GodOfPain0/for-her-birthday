@@ -3,64 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Birthday</title>
+    <title>Orbit of Love</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <!-- Dynamic Backgrounds -->
-    <div class="background-container">
-        <div class="bg-layer id-night" style="opacity: 1;"></div>
-        <div class="bg-layer id-sunrise" style="opacity: 0;"></div>
-        <div class="bg-layer id-day" style="opacity: 0;"></div>
-        <div class="bg-layer id-sunset" style="opacity: 0;"></div>
+    
+    <!-- Background Layers (Fixed, manipulated via JS) -->
+    <div id="viewport">
+        <div id="stars-layer" class="layer"></div>
+        <div id="sun-layer" class="layer">
+            <div class="sun-glow"></div>
+            <img src="https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_0171.jpg" alt="The Sun" class="sun-img">
+        </div>
+        <div id="moon-layer" class="layer">
+            <!-- Using a high res transparent moon png from a reliable source if possible, or masking CSS -->
+            <!-- Wikipedia Full Moon, usually black bg, we will use blend mode or border-radius -->
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/FullMoon2010.jpg/1024px-FullMoon2010.jpg" alt="The Moon" class="moon-img">
+        </div>
+        <div id="atmosphere-layer" class="layer"></div>
     </div>
 
-    <main>
-        <!-- Section 1: Intro (Night -> Sunrise) -->
-        <section id="intro" class="section">
-            <div class="sun-container">
-                <div class="sun"></div>
-            </div>
-            <div class="content fade-in">
-                <h1 class="turkish-quote">Kalbime sızan gün ışığımın<br>doğum günü kutlu olsun</h1>
-            </div>
-        </section>
-
-        <!-- Section 2: Poetry (Sunrise -> Day) -->
-        <section id="poetry" class="section">
-            <div class="content fade-in">
-                <h2>After you, everything became brighter.</h2>
-                <p class="verse">In the quiet of the morning,<br>you are the first light.</p>
-                <p class="verse">Chasing away the shadows,<br>painting my world in gold.</p>
-            </div>
-        </section>
-
-        <!-- Section 3: Sun Rays (Day) -->
-        <section id="rays" class="section">
-            <div class="content fade-in">
-                <h2>You are my...</h2>
-                <div class="rays-container">
-                    <div class="ray-item" data-text="Your smile warms the coldest days.">Warmth</div>
-                    <div class="ray-item" data-text="You show me the way when I am lost.">Guidance</div>
-                    <div class="ray-item" data-text="With you, anything is possible.">Hope</div>
-                    <div class="ray-item" data-text="My safe harbor in the storm.">Peace</div>
-                </div>
-                <div id="ray-message" class="ray-message"></div>
-            </div>
-        </section>
-
-        <!-- Section 4: Sunset (Day -> Sunset) -->
-        <section id="sunset" class="section">
-            <div class="content fade-in">
-                <p class="final-message">The sun sets, but the light you brought into my life remains forever.</p>
-                <p class="signature">With all my love.</p>
-            </div>
-        </section>
+    <!-- Text / Content Overlay -->
+    <main id="content-scroll">
+        <!-- Spacer to allow scrolling -->
+        <div class="scroll-trigger" data-scene="0"></div>
+        <div class="scroll-trigger" data-scene="1"></div>
+        <div class="scroll-trigger" data-scene="2"></div>
+        <div class="scroll-trigger" data-scene="3"></div>
     </main>
+
+    <!-- Fixed Text Display -->
+    <div id="text-display">
+        <div class="text-group active" id="text-0">
+            <h1>Kalbime sızan gün ışığımın<br>doğum günü kutlu olsun.</h1>
+            <p class="subtitle">Scroll to begin the journey</p>
+        </div>
+        <div class="text-group" id="text-1">
+            <h2>Sen benim sakinleştiğim yer.</h2>
+            <p>İyi günde, kötü günde;<br>eksikken de tamken de<br>seni sevmeyi seçiyorum.</p>
+        </div>
+        <div class="text-group" id="text-2">
+            <h2>Gün bittiğinde de<br>kalbim senden vazgeçmiyor.</h2>
+            <p>Kalbim, sende evini buldu.</p>
+        </div>
+        <div class="text-group" id="text-3">
+            <h2>İyi ki doğdun.</h2>
+            <p>19 yaşın kutlu olsun.</p>
+            <p class="final-quote">I love you beyond the moon,<br>past distance, into forever.</p>
+        </div>
+    </div>
+
+    <!-- Vignette / Grain Overlay -->
+    <div class="vignette"></div>
+    <div class="scanlines"></div>
 
     <script src="script.js"></script>
 </body>

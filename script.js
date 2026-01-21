@@ -1,89 +1,157 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Intersection Observer for Fade-in animations
-    const sections = document.querySelectorAll('.section');
-    
-    const observerOptions = {
-        threshold: 0.3 // Trigger when 30% of the section is visible
-    };
+class CinematicExperience {
+    constructor() {
+        this.viewport = document.getElementById('viewport');
+        this.sunLayer = document.getElementById('sun-layer');
+        this.moonLayer = document.getElementById('moon-layer');
+        this.starsLayer = document.getElementById('stars-layer');
+        this.atmosphereLayer = document.getElementById('atmosphere-layer');
+        
+        this.sunImg = this.sunLayer.querySelector('img');
+        this.moonImg = this.moonLayer.querySelector('img');
+        
+        this.textGroups = document.querySelectorAll('.text-group');
+        this.triggers = document.querySelectorAll('.scroll-trigger');
+        
+        // Configuration
+        this.totalHeight = document.body.scrollHeight - window.innerHeight;
+        
+        // State
+        this.progress = 0;
+        this.currentScene = 0;
+        
+        this.init();
+    }
 
-    const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-            } else {
-                // Optional: remove class to replay animation on scroll up? 
-                // Let's keep it visible once shown for a smoother experience, 
-                // or remove it for "replay" value. "Digital sunrise" implies a forward progression.
-                // But scrolling back to night might be cool. Let's keep it simple first.
-                entry.target.classList.remove('visible'); 
-            }
-        });
-    }, observerOptions);
-
-    sections.forEach(section => {
-        observer.observe(section);
-    });
-
-    // 2. Scroll-based Background Transition
-    const bgLayers = {
-        night: document.querySelector('.id-night'),
-        sunrise: document.querySelector('.id-sunrise'),
-        day: document.querySelector('.id-day'),
-        sunset: document.querySelector('.id-sunset')
-    };
-
-    window.addEventListener('scroll', () => {
-        const scrollTop = window.scrollY;
-        const docHeight = document.body.scrollHeight - window.innerHeight;
-        const scrollPercent = Math.min(Math.max(scrollTop / docHeight, 0), 1);
-
-        // We blend layers based on scroll percentage ranges.
-        // 0.0 - 0.33: Night fades out, Sunrise fades in
-        // 0.33 - 0.66: Sunrise fades out, Day fades in
-        // 0.66 - 1.0: Day fades out, Sunset fades in
-
-        // Reset all first
-        bgLayers.night.style.opacity = 0;
-        bgLayers.sunrise.style.opacity = 0;
-        bgLayers.day.style.opacity = 0;
-        bgLayers.sunset.style.opacity = 0;
-
-        if (scrollPercent <= 0.33) {
-            // Night -> Sunrise
-            const progress = scrollPercent / 0.33; 
-            bgLayers.night.style.opacity = 1 - progress;
-            bgLayers.sunrise.style.opacity = progress;
-        } else if (scrollPercent <= 0.66) {
-            // Sunrise -> Day
-            const progress = (scrollPercent - 0.33) / 0.33;
-            bgLayers.sunrise.style.opacity = 1 - progress;
-            bgLayers.day.style.opacity = progress;
-        } else {
-            // Day -> Sunset
-            const progress = (scrollPercent - 0.66) / 0.34;
-            bgLayers.day.style.opacity = 1 - progress;
-            bgLayers.sunset.style.opacity = progress;
-        }
-    });
-
-    // 3. Ray Interaction
-    const rays = document.querySelectorAll('.ray-item');
-    const rayMessage = document.getElementById('ray-message');
-
-    rays.forEach(ray => {
-        ray.addEventListener('mouseenter', () => {
-            rayMessage.textContent = ray.getAttribute('data-text');
-            rayMessage.style.opacity = '1';
-        });
-
-        ray.addEventListener('mouseleave', () => {
-            rayMessage.style.opacity = '0';
+    init() {
+        window.addEventListener('scroll', () => this.onScroll());
+        window.addEventListener('resize', () => {
+            this.totalHeight = document.body.scrollHeight - window.innerHeight;
         });
         
-        // For mobile tap
-        ray.addEventListener('click', () => {
-             rayMessage.textContent = ray.getAttribute('data-text');
-             rayMessage.style.opacity = '1';
+        // Initial render
+        this.render(0);
+    }
+
+    onScroll() {
+        const scrollTop = window.scrollY;
+        // Global progress 0 to 1
+        this.progress = Math.max(0, Math.min(1, scrollTop / this.totalHeight));
+        
+        this.render(this.progress);
+    }
+
+    // Helper: Linear Interpolation
+    lerp(start, end, t) {
+        return start * (1 - t) + end * t;
+    }
+
+    // Helper: Map range
+    map(value, low1, high1, low2, high2) {
+        return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
+    }
+
+    render(p) {
+        // SCENE LOGIC
+        // We divide the total scrollable area into scenes.
+        // Scene 0: 0.0 - 0.25 (Sun Focus)
+        // Scene 1: 0.25 - 0.5 (Sunset)
+        // Scene 2: 0.5 - 0.75 (Moon Rise)
+        // Scene 3: 0.75 - 1.0 (Deep Space)
+
+        // TEXT VISIBILITY MANAGER
+        // We determine active text based on roughly centered scene progress
+        let activeIndex = -1;
+        if (p < 0.20) activeIndex = 0;
+        else if (p > 0.25 && p < 0.45) activeIndex = 1;
+        else if (p > 0.55 && p < 0.70) activeIndex = 2;
+        else if (p > 0.80) activeIndex = 3;
+
+        this.textGroups.forEach((group, index) => {
+            if (index === activeIndex) {
+                group.classList.add('active');
+            } else {
+                group.classList.remove('active');
+            }
         });
-    });
+
+        // ANIMATION: SUN
+        // Scene 0 -> 1: Sun scales down slightly and rotates
+        // Scene 1 -> 2: Sun moves down (sets)
+        
+        let sunY = 0;
+        let sunScale = 1;
+        let sunRotate = p * 120; // Rotate continuously
+
+        if (p < 0.25) {
+            // Scene 0: Sun is central
+            sunScale = this.map(p, 0, 0.25, 1.2, 1.0);
+        } else if (p < 0.6) {
+            // Scene 1: Sun sets
+            // 0.25 -> 0.6
+            const localP = (p - 0.25) / 0.35;
+            sunY = this.lerp(0, 150, localP); // Move down 150vh? CSS uses translate
+            sunScale = this.lerp(1.0, 0.8, localP);
+        } else {
+            // Gone
+            sunY = 150; 
+        }
+
+        this.sunLayer.style.transform = `translateY(${sunY}vh) scale(${sunScale}) rotate(${sunRotate}deg)`;
+
+        // ANIMATION: MOON
+        // Scene 2 -> 3: Moon rises
+        // Starts at translateY(50vh) (CSS default)
+        
+        let moonY = 50; 
+        if (p > 0.5) {
+            // 0.5 -> 0.8
+            const localP = Math.min(1, (p - 0.5) / 0.3);
+            moonY = this.lerp(50, 0, localP); // Rises to center
+        }
+        
+        // Scene 3: Moon floats slightly up/down or scales up?
+        // Let's just keep it centered or slight float
+        if (p > 0.8) {
+            const localP = (p - 0.8) / 0.2;
+            moonY = this.lerp(0, -10, localP); // Slight float up
+        }
+
+        this.moonLayer.style.transform = `translateY(${moonY}vh)`;
+        this.moonLayer.style.opacity = p > 0.45 ? 1 : 0; // Fade in as sun sets
+
+        // ANIMATION: ATMOSPHERE / BACKGROUND
+        // Scene 0: Space Black
+        // Scene 1: Sunset Blue/Orange (Atmosphere opacity)
+        // Scene 2: Deep Blue/Purple
+        // Scene 3: Space Black
+        
+        let atmoOpacity = 0;
+        if (p > 0.2 && p < 0.5) {
+            // Fade in sunset colors
+            if (p < 0.35) atmoOpacity = this.map(p, 0.2, 0.35, 0, 0.8);
+            else atmoOpacity = this.map(p, 0.35, 0.5, 0.8, 0);
+        }
+        this.atmosphereLayer.style.opacity = atmoOpacity;
+
+        // ANIMATION: STARS
+        // Scene 0: Dim (0.2)
+        // Scene 1: Fades out completely during bright sunset? Or stays?
+        // Scene 3: Full brightness (1.0) and Zoom
+        
+        let starOpacity = 0.2;
+        let starScale = 1.1;
+
+        if (p > 0.5) {
+            starOpacity = this.map(p, 0.5, 1.0, 0.2, 1.0);
+            starScale = this.map(p, 0.5, 1.0, 1.1, 1.5); // Zoom into space
+        }
+        
+        this.starsLayer.style.opacity = starOpacity;
+        this.starsLayer.style.transform = `scale(${starScale})`;
+    }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    new CinematicExperience();
 });

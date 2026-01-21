@@ -1,13 +1,7 @@
 :root {
-    --bg-night: #0a0e17;
-    --bg-dawn: #2d1b2e;
-    --bg-sunrise: #e67e22;
-    --bg-day: #f1c40f;
-    --bg-sunset: #d35400;
-    --text-light: #fdfefe;
-    --text-dark: #2c3e50;
-    --sun-color: #f39c12;
-    --sun-glow: rgba(243, 156, 18, 0.6);
+    --bg-space: #000000;
+    --font-heading: 'Cinzel', serif;
+    --font-body: 'Lato', sans-serif;
 }
 
 * {
@@ -17,173 +11,201 @@
 }
 
 body {
-    font-family: 'Lato', sans-serif;
-    color: var(--text-light);
+    background-color: var(--bg-space);
+    color: white;
+    font-family: var(--font-body);
     overflow-x: hidden;
-    /* Background handled by .background-container */
+    /* We keep overflow-y scrollable to drive the animation, but hide scrollbar */
+    scrollbar-width: none; /* Firefox */
 }
 
-.background-container {
+body::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+/* VIEWPORT: The fixed window into our world */
+#viewport {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 100vw;
     height: 100vh;
-    z-index: -2;
+    overflow: hidden;
+    z-index: -1;
 }
 
-.bg-layer {
+.layer {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    transition: opacity 0.5s ease-out;
+    pointer-events: none;
+    will-change: transform, opacity;
 }
 
-.id-night { background: linear-gradient(to bottom, #020111 0%, #3a3a52 100%); }
-.id-sunrise { background: linear-gradient(to bottom, #2d1b2e 0%, #e67e22 100%); }
-.id-day { background: linear-gradient(to bottom, #e67e22 0%, #f1c40f 100%); }
-.id-sunset { background: linear-gradient(to bottom, #f39c12 0%, #d35400 100%); }
-
-h1, h2, .signature {
-    font-family: 'Playfair Display', serif;
+/* STARS */
+#stars-layer {
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/2/23/The_Celestial_Zoo_in_Canis_Major.jpg'); 
+    /* Using a dense starfield */
+    background-size: cover;
+    background-position: center;
+    opacity: 0.2; /* Starts dim */
+    transform: scale(1.1);
+    transition: opacity 2s ease;
 }
 
-.section {
-    min-height: 100vh;
+/* SUN */
+#sun-layer {
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center;
-    padding: 2rem;
-    position: relative;
-    opacity: 0; /* Hidden by default for intersection observer */
-    transition: opacity 1.5s ease-out;
+    mix-blend-mode: screen; /* Blends nicely with black/stars */
+    z-index: 2;
 }
 
-.section.visible {
-    opacity: 1;
-}
-
-/* Intro Section */
-#intro {
-    background: transparent;
-}
-
-.turkish-quote {
-    font-size: 2rem;
-    line-height: 1.4;
-    margin-top: 2rem;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-}
-
-.sun-container {
-    position: absolute;
-    bottom: -50px; /* Starts below */
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: -1;
-    transition: transform 2s ease-out;
-}
-
-.section.visible .sun-container {
-    transform: translate(-50%, -150px); /* Rises up */
-}
-
-.sun {
-    width: 150px;
-    height: 150px;
-    background-color: var(--sun-color);
+.sun-img {
+    width: 80vh; /* Massive sun initially */
+    height: 80vh;
     border-radius: 50%;
-    box-shadow: 0 0 40px 20px var(--sun-glow);
+    /* SDO images are usually black square with sun in middle, screen blend removes black */
+    filter: contrast(1.2) saturate(1.2);
+    box-shadow: 0 0 100px 20px rgba(253, 184, 19, 0.4); 
 }
 
-/* Poetry Section */
-#poetry {
-    /* Gradient will be handled by JS or fixed CSS for simplicity? 
-       Let's stick to CSS gradients for sections but fade body bg behind?
-       Actually, prompt asked for "Warm gradient background (deep night blue → orange → golden yellow)".
-       The body background transition might be better. 
-       Let's set section backgrounds to transparent and rely on body or fixed background.
-    */
-    background: transparent; 
-}
-
-.verse {
-    font-size: 1.2rem;
-    margin: 1.5rem 0;
-    font-weight: 300;
-}
-
-/* Rays Section */
-#rays {
-    background: transparent;
-}
-
-.rays-container {
+/* MOON */
+#moon-layer {
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
-    gap: 1.5rem;
-    margin-top: 2rem;
+    align-items: center;
+    z-index: 3;
+    opacity: 0; /* Hidden initially */
+    transform: translateY(50vh); /* Starts below horizon */
 }
 
-.ray-item {
-    padding: 1rem 2rem;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 30px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    background: rgba(255, 255, 255, 0.1);
+.moon-img {
+    width: 50vh;
+    height: 50vh;
+    border-radius: 50%;
+    box-shadow: 0 0 50px 10px rgba(255, 255, 255, 0.2);
+    /* Basic masking for square image if needed */
+    clip-path: circle(48%);
 }
 
-.ray-item:hover {
-    background: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-    transform: translateY(-2px);
-}
-
-.ray-message {
-    margin-top: 2rem;
-    min-height: 1.5rem;
-    font-style: italic;
+/* ATMOSPHERE / GRADIENTS */
+#atmosphere-layer {
+    background: linear-gradient(to bottom, #000000 0%, #1e3c72 100%);
     opacity: 0;
-    transition: opacity 0.5s ease;
+    z-index: 1;
 }
 
-/* Sunset Section */
-#sunset {
-    background: transparent;
+/* UI / TEXT */
+#text-display {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 800px;
+    text-align: center;
+    z-index: 10;
+    pointer-events: none;
+    mix-blend-mode: overlay; /* Cinematic text blend? Or normal? */
+    /* Let's stick to normal for readability, maybe add text-shadow */
+    mix-blend-mode: normal; 
 }
 
-.final-message {
-    font-size: 1.5rem;
-    margin-bottom: 3rem;
-    max-width: 600px;
+.text-group {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    opacity: 0;
+    transition: opacity 1s ease, transform 1s ease;
 }
 
-.signature {
+.text-group.active {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.text-group h1 {
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    text-shadow: 0 4px 10px rgba(0,0,0,0.8);
+    letter-spacing: 2px;
+}
+
+.text-group h2 {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 4px 10px rgba(0,0,0,0.8);
+}
+
+.text-group p {
     font-size: 1.2rem;
-    margin-top: 2rem;
-    opacity: 0.8;
+    line-height: 1.6;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.8);
 }
 
-/* Media Queries */
-@media (min-width: 768px) {
-    .turkish-quote {
-        font-size: 3rem;
-    }
-    
-    .sun {
-        width: 250px;
-        height: 250px;
-    }
+.subtitle {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    margin-top: 2rem;
+    animation: pulse 2s infinite;
+}
 
-    .verse {
-        font-size: 1.5rem;
-    }
+/* SCROLL TRIGGERS (Invisible layout) */
+#content-scroll {
+    position: relative;
+    width: 100%;
+}
+
+.scroll-trigger {
+    height: 150vh; /* Each scene takes 1.5 screen heights of scroll */
+}
+
+/* OVERLAYS */
+.vignette {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, transparent 50%, black 100%);
+    z-index: 20;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.scanlines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 2px,
+        rgba(0, 0, 0, 0.1) 3px
+    );
+    z-index: 21;
+    pointer-events: none;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 0.3; }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .sun-img { width: 90vw; height: 90vw; }
+    .moon-img { width: 70vw; height: 70vw; }
+    .text-group h1 { font-size: 2rem; }
+    .text-group h2 { font-size: 1.5rem; }
 }
