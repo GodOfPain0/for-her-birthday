@@ -23,6 +23,7 @@ class CinematicExperience {
     }
 
     init() {
+        this.createSunRays();
         window.addEventListener('scroll', () => this.onScroll());
         window.addEventListener('resize', () => {
             this.totalHeight = document.body.scrollHeight - window.innerHeight;
@@ -30,6 +31,43 @@ class CinematicExperience {
         
         // Initial render
         this.render(0);
+    }
+
+    createSunRays() {
+        const container = this.sunLayer.querySelector('.sun-rays-container');
+        if (!container) return;
+
+        // "Reasons / Feelings"
+        const raysData = [
+            "Huzur", "Mutluluk", "Güven", 
+            "Işık", "Neşe", "Sıcaklık", 
+            "Umut", "Sevgi"
+        ];
+
+        const count = raysData.length;
+        const radius = 40; // vh, matches roughly half of sun size (80vh)
+        
+        raysData.forEach((text, i) => {
+            const angle = (360 / count) * i;
+            const ray = document.createElement('div');
+            ray.className = 'sun-ray';
+            
+            // Determine length
+            const length = 30 + Math.random() * 20; // 30-50vh length
+            
+            ray.style.width = `${length}vh`;
+            ray.style.transform = `rotate(${angle}deg) translateX(${radius}vh)`;
+            
+            const textSpan = document.createElement('span');
+            textSpan.className = 'ray-text';
+            textSpan.textContent = text;
+            // Rotate text back so it's readable? Or keep it aligned with ray?
+            // Keeping aligned with ray but maybe flipping if on left side?
+            // For simplicity, just append.
+            
+            ray.appendChild(textSpan);
+            container.appendChild(ray);
+        });
     }
 
     onScroll() {

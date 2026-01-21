@@ -77,6 +77,61 @@ body::-webkit-scrollbar {
         sunPulse 8s ease-in-out infinite alternate;
 }
 
+/* SUN RAYS */
+.sun-rays-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    /* Rays will rotate around this center */
+    pointer-events: auto; /* Enable hover */
+    z-index: 5;
+}
+
+.sun-ray {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+    /* We will set width/rotation in JS */
+    height: 2px;
+    background: linear-gradient(90deg, rgba(255,200,50,0) 0%, rgba(255,200,50,0.4) 50%, rgba(255,200,50,0) 100%);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Text at outer tip */
+}
+
+.sun-ray:hover {
+    height: 4px;
+    background: linear-gradient(90deg, rgba(255,255,200,0) 0%, rgba(255,255,200,0.8) 50%, rgba(255,255,200,0) 100%);
+    z-index: 10;
+}
+
+.ray-text {
+    color: #fff;
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    text-transform: uppercase;
+    text-shadow: 0 0 5px #000;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    white-space: nowrap;
+    pointer-events: none;
+    background: rgba(0,0,0,0.3);
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.sun-ray:hover .ray-text {
+    opacity: 1;
+    transform: translateX(10px);
+}
+
+
 /* MOON */
 #moon-layer {
     display: flex;
@@ -233,4 +288,9 @@ body::-webkit-scrollbar {
     .moon-img { width: 70vw; height: 70vw; }
     .text-group h1 { font-size: 2rem; }
     .text-group h2 { font-size: 1.5rem; }
+    
+    .sun-ray {
+        /* On mobile, rays might need to be shorter or interact differently */
+        /* Tap instead of hover, which CSS :hover handles okay on most modern devices */
+    }
 }
