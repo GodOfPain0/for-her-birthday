@@ -107,12 +107,10 @@ document.addEventListener('DOMContentLoaded', () => {
     tl.to(landscape, { filter: 'brightness(0.8)', duration: 6 }, "sunrise");
 
     // Sunrise Texts
-    // "Bugün senin günün."
-    tl.add(addTextToTl("Bugün senin günün.", 2, 2.5), "sunrise+=1");
+    // "Bugün senin günün aşkım."
+    tl.add(addTextToTl("Bugün senin günün aşkım.", 2, 3), "sunrise+=1");
     // "Doğum günün kutlu olsun."
-    tl.add(addTextToTl("Doğum günün kutlu olsun.", 2, 2.5), ">-0.5");
-    // "İyi ki doğdun Dünya."
-    tl.add(addTextToTl("İyi ki doğdun Dünya.", 2, 2.5), ">-0.5");
+    tl.add(addTextToTl("Doğum günün kutlu olsun.", 2, 3), ">-0.5");
 
 
     // 3. DAY TO SUNSET
@@ -132,10 +130,10 @@ document.addEventListener('DOMContentLoaded', () => {
     tl.to(landscape, { filter: 'brightness(0.3)', duration: 8 }, "sunset+=2");
 
     // Sunset Texts
-    // "Yanımda olman güzel."
-    tl.add(addTextToTl("Yanımda olman güzel.", 2, 3), "sunset+=3");
-    // "Her gün."
-    tl.add(addTextToTl("Her gün.", 2, 3), ">-0.5");
+    // "Bunu yaparken aklımdan tek bir şey geçti:"
+    tl.add(addTextToTl("Bunu yaparken aklımdan tek bir şey geçti:", 2, 3), "sunset+=3");
+    // "Sen güldüğünde her şey daha güzel oluyor."
+    tl.add(addTextToTl("Sen güldüğünde her şey daha güzel oluyor.", 2, 4), ">-0.5");
 
 
     // 4. SUNSET TO NIGHT (Moonrise)
@@ -162,8 +160,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Moonrise Texts
     // "İyi ki varsın."
     tl.add(addTextToTl("İyi ki varsın.", 2, 3), "moonrise+=3");
-    // "Seni seviyorum."
-    tl.add(addTextToTl("Seni seviyorum.", 2, 3), ">-0.5");
+    // "İyi ki hayatımdasın."
+    tl.add(addTextToTl("İyi ki hayatımdasın.", 2, 3), ">-0.5");
 
     // 5. FINALE
     // Final text persists
@@ -174,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
         opacity: 0, 
         duration: 1, 
         onComplete: () => { 
-            msgText.innerHTML = "Bunu sen gül diye yaptım.<br><br>İyi ki doğdun aşkım"; 
+            msgText.innerHTML = "Bunu sen gül diye yaptım.<br><br>İyi ki varsın."; 
         }
     }, "finale");
     
