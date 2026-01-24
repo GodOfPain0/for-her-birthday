@@ -1,195 +1,194 @@
-class CinematicExperience {
-    constructor() {
-        this.viewport = document.getElementById('viewport');
-        this.sunLayer = document.getElementById('sun-layer');
-        this.moonLayer = document.getElementById('moon-layer');
-        this.starsLayer = document.getElementById('stars-layer');
-        this.atmosphereLayer = document.getElementById('atmosphere-layer');
-        
-        this.sunImg = this.sunLayer.querySelector('img');
-        this.moonImg = this.moonLayer.querySelector('img');
-        
-        this.textGroups = document.querySelectorAll('.text-group');
-        this.triggers = document.querySelectorAll('.scroll-trigger');
-        
-        // Configuration
-        this.totalHeight = document.body.scrollHeight - window.innerHeight;
-        
-        // State
-        this.progress = 0;
-        this.currentScene = 0;
-        
-        this.init();
-    }
 
-    init() {
-        this.createSunRays();
-        window.addEventListener('scroll', () => this.onScroll());
-        window.addEventListener('resize', () => {
-            this.totalHeight = document.body.scrollHeight - window.innerHeight;
-        });
-        
-        // Initial render
-        this.render(0);
-    }
-
-    createSunRays() {
-        const container = this.sunLayer.querySelector('.sun-rays-container');
-        if (!container) return;
-
-        // "Reasons / Feelings"
-        const raysData = [
-            "Huzur", "Mutluluk", "Güven", 
-            "Işık", "Neşe", "Sıcaklık", 
-            "Umut", "Sevgi"
-        ];
-
-        const count = raysData.length;
-        const radius = 40; // vh, matches roughly half of sun size (80vh)
-        
-        raysData.forEach((text, i) => {
-            const angle = (360 / count) * i;
-            const ray = document.createElement('div');
-            ray.className = 'sun-ray';
-            
-            // Determine length
-            const length = 30 + Math.random() * 20; // 30-50vh length
-            
-            ray.style.width = `${length}vh`;
-            ray.style.transform = `rotate(${angle}deg) translateX(${radius}vh)`;
-            
-            const textSpan = document.createElement('span');
-            textSpan.className = 'ray-text';
-            textSpan.textContent = text;
-            // Rotate text back so it's readable? Or keep it aligned with ray?
-            // Keeping aligned with ray but maybe flipping if on left side?
-            // For simplicity, just append.
-            
-            ray.appendChild(textSpan);
-            container.appendChild(ray);
-        });
-    }
-
-    onScroll() {
-        const scrollTop = window.scrollY;
-        // Global progress 0 to 1
-        this.progress = Math.max(0, Math.min(1, scrollTop / this.totalHeight));
-        
-        this.render(this.progress);
-    }
-
-    // Helper: Linear Interpolation
-    lerp(start, end, t) {
-        return start * (1 - t) + end * t;
-    }
-
-    // Helper: Map range
-    map(value, low1, high1, low2, high2) {
-        return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
-    }
-
-    render(p) {
-        // SCENE LOGIC
-        // We divide the total scrollable area into scenes.
-        // Scene 0: 0.0 - 0.25 (Sun Focus)
-        // Scene 1: 0.25 - 0.5 (Sunset)
-        // Scene 2: 0.5 - 0.75 (Moon Rise)
-        // Scene 3: 0.75 - 1.0 (Deep Space)
-
-        // TEXT VISIBILITY MANAGER
-        // We determine active text based on roughly centered scene progress
-        let activeIndex = -1;
-        if (p < 0.20) activeIndex = 0;
-        else if (p > 0.25 && p < 0.45) activeIndex = 1;
-        else if (p > 0.55 && p < 0.70) activeIndex = 2;
-        else if (p > 0.80) activeIndex = 3;
-
-        this.textGroups.forEach((group, index) => {
-            if (index === activeIndex) {
-                group.classList.add('active');
-            } else {
-                group.classList.remove('active');
-            }
-        });
-
-        // ANIMATION: SUN
-        // Scene 0 -> 1: Sun scales down slightly and rotates
-        // Scene 1 -> 2: Sun moves down (sets)
-        
-        let sunY = 0;
-        let sunScale = 1;
-        let sunRotate = p * 120; // Rotate continuously
-
-        if (p < 0.25) {
-            // Scene 0: Sun is central
-            sunScale = this.map(p, 0, 0.25, 1.2, 1.0);
-        } else if (p < 0.6) {
-            // Scene 1: Sun sets
-            // 0.25 -> 0.6
-            const localP = (p - 0.25) / 0.35;
-            sunY = this.lerp(0, 150, localP); // Move down 150vh? CSS uses translate
-            sunScale = this.lerp(1.0, 0.8, localP);
-        } else {
-            // Gone
-            sunY = 150; 
-        }
-
-        this.sunLayer.style.transform = `translateY(${sunY}vh) scale(${sunScale}) rotate(${sunRotate}deg)`;
-
-        // ANIMATION: MOON
-        // Scene 2 -> 3: Moon rises
-        // Starts at translateY(50vh) (CSS default)
-        
-        let moonY = 50; 
-        if (p > 0.5) {
-            // 0.5 -> 0.8
-            const localP = Math.min(1, (p - 0.5) / 0.3);
-            moonY = this.lerp(50, 0, localP); // Rises to center
-        }
-        
-        // Scene 3: Moon floats slightly up/down or scales up?
-        // Let's just keep it centered or slight float
-        if (p > 0.8) {
-            const localP = (p - 0.8) / 0.2;
-            moonY = this.lerp(0, -10, localP); // Slight float up
-        }
-
-        this.moonLayer.style.transform = `translateY(${moonY}vh)`;
-        this.moonLayer.style.opacity = p > 0.45 ? 1 : 0; // Fade in as sun sets
-
-        // ANIMATION: ATMOSPHERE / BACKGROUND
-        // Scene 0: Space Black
-        // Scene 1: Sunset Blue/Orange (Atmosphere opacity)
-        // Scene 2: Deep Blue/Purple
-        // Scene 3: Space Black
-        
-        let atmoOpacity = 0;
-        if (p > 0.2 && p < 0.5) {
-            // Fade in sunset colors
-            if (p < 0.35) atmoOpacity = this.map(p, 0.2, 0.35, 0, 0.8);
-            else atmoOpacity = this.map(p, 0.35, 0.5, 0.8, 0);
-        }
-        this.atmosphereLayer.style.opacity = atmoOpacity;
-
-        // ANIMATION: STARS
-        // Scene 0: Dim (0.2)
-        // Scene 1: Fades out completely during bright sunset? Or stays?
-        // Scene 3: Full brightness (1.0) and Zoom
-        
-        let starOpacity = 0.2;
-        let starScale = 1.1;
-
-        if (p > 0.5) {
-            starOpacity = this.map(p, 0.5, 1.0, 0.2, 1.0);
-            starScale = this.map(p, 0.5, 1.0, 1.1, 1.5); // Zoom into space
-        }
-        
-        this.starsLayer.style.opacity = starOpacity;
-        this.starsLayer.style.transform = `scale(${starScale})`;
-    }
-}
-
-// Initialize
+// Wait for DOM
 document.addEventListener('DOMContentLoaded', () => {
-    new CinematicExperience();
+    // --- Elements ---
+    const startScreen = document.getElementById('start-screen');
+    const startBtn = document.getElementById('start-btn');
+    const bgMusic = document.getElementById('bg-music');
+    
+    // Sky Layers
+    const skyNight = document.querySelector('.sky-night');
+    const skyDawn = document.querySelector('.sky-dawn');
+    const skySunrise = document.querySelector('.sky-sunrise');
+    const skyDay = document.querySelector('.sky-day');
+    const skySunset = document.querySelector('.sky-sunset');
+    
+    const sunContainer = document.querySelector('.sun-container');
+    const moonContainer = document.querySelector('.moon-container');
+    const starsContainer = document.querySelector('.stars-container');
+    const msgText = document.getElementById('msg-text');
+    const landscape = document.querySelector('.landscape');
+
+    // --- Audio Setup ---
+    // Try to lower volume for background
+    bgMusic.volume = 0.5;
+
+    // --- Star Generation ---
+    // Create stars dynamically
+    const starCount = 200;
+    for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        // Random position
+        const x = Math.random() * 100;
+        const y = Math.random() * 70; // Keep stars mostly in top 70%
+        // Random size
+        const size = Math.random() * 2 + 1;
+        // Random delay
+        const delay = Math.random() * 2;
+        
+        star.style.left = `${x}%`;
+        star.style.top = `${y}%`;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        star.style.animationDelay = `${delay}s`;
+        
+        starsContainer.appendChild(star);
+    }
+
+    // --- Main Timeline ---
+    // We use a master timeline to control everything
+    const tl = gsap.timeline({ paused: true });
+
+    // Helper to add text to timeline
+    // We will crossfade text: fade in -> hold -> fade out
+    function addTextToTl(text, duration = 3, hold = 2) {
+        // Create a temporary timeline for the text sequence
+        const textTl = gsap.timeline();
+        textTl.to(msgText, {
+            opacity: 0, 
+            duration: 1, 
+            onComplete: () => { msgText.innerText = text; }
+        })
+        .to(msgText, { opacity: 1, duration: 1.5, ease: "power2.out" })
+        .to(msgText, { opacity: 1, duration: hold }) // hold
+        .to(msgText, { opacity: 0, duration: 1, ease: "power2.in" });
+        
+        return textTl;
+    }
+
+    // --- Build Animation Sequence ---
+
+    // Initial State
+    gsap.set(sunContainer, { y: 300, rotation: -30 }); // Below horizon
+    gsap.set(moonContainer, { y: 300, rotation: -30 }); // Below horizon
+    gsap.set([skyNight, skyDawn, skySunrise, skyDay, skySunset], { opacity: 0 });
+    gsap.set(skyNight, { opacity: 1 }); // Start with Night
+    gsap.set(starsContainer, { opacity: 1 });
+    gsap.set(landscape, { filter: 'brightness(0.1)' });
+
+    // 1. NIGHT TO DAWN
+    tl.to(skyDawn, { opacity: 1, duration: 5 }, "dawn");
+    // Fade out night slightly to let dawn take over (or keep it as base)
+    tl.to(skyNight, { opacity: 0, duration: 5 }, "dawn");
+    
+    tl.to(starsContainer, { opacity: 0.5, duration: 5 }, "dawn");
+
+    // 2. SUNRISE (Sun comes up)
+    tl.to(sunContainer, { 
+        y: -window.innerHeight * 0.7, /* Move up high */
+        x: window.innerWidth * 0.2, /* Arc slightly right */
+        rotation: 0,
+        duration: 10,
+        ease: "power2.out"
+    }, "sunrise");
+
+    // Sky transitions: Dawn -> Sunrise -> Day
+    tl.to(skySunrise, { opacity: 1, duration: 5 }, "sunrise-=2");
+    tl.to(skyDawn, { opacity: 0, duration: 5 }, "sunrise-=2");
+    
+    tl.to(skyDay, { opacity: 1, duration: 5 }, "sunrise+=3");
+    tl.to(skySunrise, { opacity: 0, duration: 5 }, "sunrise+=3");
+
+    // Stars disappear
+    tl.to(starsContainer, { opacity: 0, duration: 3 }, "sunrise");
+    
+    // Landscape brightens
+    tl.to(landscape, { filter: 'brightness(0.8)', duration: 6 }, "sunrise");
+
+    // Sunrise Texts
+    // "Bugün senin günün."
+    tl.add(addTextToTl("Bugün senin günün.", 2, 2.5), "sunrise+=1");
+    // "Doğum günün kutlu olsun."
+    tl.add(addTextToTl("Doğum günün kutlu olsun.", 2, 2.5), ">-0.5");
+    // "İyi ki doğdun Dünya."
+    tl.add(addTextToTl("İyi ki doğdun Dünya.", 2, 2.5), ">-0.5");
+
+
+    // 3. DAY TO SUNSET
+    // Sun moves across and down
+    tl.to(sunContainer, { 
+        y: 150, /* Go down towards horizon */
+        x: window.innerWidth * 0.5, 
+        rotation: 30,
+        duration: 12,
+        ease: "power1.inOut"
+    }, "sunset");
+
+    // Sky transitions: Day -> Sunset
+    tl.to(skySunset, { opacity: 1, duration: 8 }, "sunset+=2");
+    tl.to(skyDay, { opacity: 0, duration: 8 }, "sunset+=2");
+
+    tl.to(landscape, { filter: 'brightness(0.3)', duration: 8 }, "sunset+=2");
+
+    // Sunset Texts
+    // "Yanımda olman güzel."
+    tl.add(addTextToTl("Yanımda olman güzel.", 2, 3), "sunset+=3");
+    // "Her gün."
+    tl.add(addTextToTl("Her gün.", 2, 3), ">-0.5");
+
+
+    // 4. SUNSET TO NIGHT (Moonrise)
+    // Sun fully sets
+    tl.to(sunContainer, { y: 500, duration: 5 }, "nightfall");
+    
+    // Sky transitions: Sunset -> Night
+    tl.to(skyNight, { opacity: 1, duration: 8 }, "nightfall");
+    tl.to(skySunset, { opacity: 0, duration: 8 }, "nightfall");
+
+    tl.to(starsContainer, { opacity: 1, duration: 5 }, "nightfall+=3");
+
+    // Moon Rises
+    tl.to(moonContainer, { 
+        y: -window.innerHeight * 0.6,
+        x: -window.innerWidth * 0.1,
+        rotation: 0,
+        duration: 10,
+        ease: "power2.out"
+    }, "moonrise");
+
+    tl.to(landscape, { filter: 'brightness(0.15)', duration: 6 }, "moonrise");
+
+    // Moonrise Texts
+    // "İyi ki varsın."
+    tl.add(addTextToTl("İyi ki varsın.", 2, 3), "moonrise+=3");
+    // "Seni seviyorum."
+    tl.add(addTextToTl("Seni seviyorum.", 2, 3), ">-0.5");
+
+    // 5. FINALE
+    // Final text persists
+    tl.addLabel("finale");
+    
+    // Special handling for final text to support line breaks and staying on screen
+    tl.to(msgText, { 
+        opacity: 0, 
+        duration: 1, 
+        onComplete: () => { 
+            msgText.innerHTML = "Bunu sen gül diye yaptım.<br><br>İyi ki doğdun aşkım"; 
+        }
+    }, "finale");
+    
+    tl.to(msgText, { opacity: 1, duration: 3, ease: "power2.out" }, "finale+=1.5");
+
+    // --- Start Interaction ---
+    startBtn.addEventListener('click', () => {
+        // Hide start screen
+        gsap.to(startScreen, { opacity: 0, duration: 1, onComplete: () => startScreen.style.display = 'none' });
+        
+        // Play Audio
+        bgMusic.play().catch(e => console.log("Audio play failed:", e));
+
+        // Start Animation
+        tl.play();
+    });
 });

@@ -1,66 +1,71 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orbit of Love</title>
+    <title>İyi ki Doğdun</title>
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
+    
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
 <body>
-    
-    <!-- Background Layers (Fixed, manipulated via JS) -->
-    <div id="viewport">
-        <div id="stars-layer" class="layer"></div>
-        <div id="sun-layer" class="layer">
-            <div class="sun-glow"></div>
-            <div class="sun-rays-container"></div>
-            <img src="https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_0171.jpg" alt="The Sun" class="sun-img">
-        </div>
-        <div id="moon-layer" class="layer">
-            <!-- Using a high res transparent moon png from a reliable source if possible, or masking CSS -->
-            <!-- Wikipedia Full Moon, usually black bg, we will use blend mode or border-radius -->
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/FullMoon2010.jpg/1024px-FullMoon2010.jpg" alt="The Moon" class="moon-img">
-        </div>
-        <div id="atmosphere-layer" class="layer"></div>
+
+    <!-- Audio Placeholder -->
+    <audio id="bg-music" loop>
+        <!-- Placeholder audio file - ambient nature sound -->
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=forest-lullaby-110624.mp3" type="audio/mp3">
+        <!-- User should replace the src above with their chosen file -->
+    </audio>
+
+    <!-- Start Overlay -->
+    <div id="start-screen">
+        <button id="start-btn">Başla</button>
     </div>
 
-    <!-- Text / Content Overlay -->
-    <main id="content-scroll">
-        <!-- Spacer to allow scrolling -->
-        <div class="scroll-trigger" data-scene="0"></div>
-        <div class="scroll-trigger" data-scene="1"></div>
-        <div class="scroll-trigger" data-scene="2"></div>
-        <div class="scroll-trigger" data-scene="3"></div>
-    </main>
+    <!-- Sky Background -->
+    <div class="sky-container">
+        <!-- Sky Layers for smooth crossfading -->
+        <div class="sky-layer sky-night"></div>
+        <div class="sky-layer sky-dawn"></div>
+        <div class="sky-layer sky-sunrise"></div>
+        <div class="sky-layer sky-day"></div>
+        <div class="sky-layer sky-sunset"></div>
 
-    <!-- Fixed Text Display -->
-    <div id="text-display">
-        <div class="text-group active" id="text-0">
-            <h1>Kalbime sızan gün ışığımın<br>doğum günü kutlu olsun.</h1>
-            <p class="subtitle">Scroll to begin the journey</p>
+        <div class="stars-container"></div>
+        
+        <!-- Celestial Bodies -->
+        <div class="sun-container">
+            <div class="sun">
+                <div class="sun-glow-1"></div>
+                <div class="sun-glow-2"></div>
+                <div class="sun-glow-3"></div>
+            </div>
         </div>
-        <div class="text-group" id="text-1">
-            <h2>After you,<br>everything became brighter.</h2>
-            <p>Senden sonra her şey aydınlandı.</p>
+
+        <div class="moon-container">
+            <div class="moon">
+                <div class="moon-texture"></div>
+                <div class="moon-glow"></div>
+            </div>
         </div>
-        <div class="text-group" id="text-2">
-            <h2>Yanında susabildiğim<br>tek yer sensin.</h2>
-            <p>You are the only place<br>I can be silent.</p>
-        </div>
-        <div class="text-group" id="text-3">
-            <h2>Bazı insanlar doğar,<br>dünyayı değiştirir.</h2>
-            <p>İyi ki doğdun.</p>
-            <p class="final-quote">I love you beyond the moon,<br>past distance, into forever.</p>
-        </div>
+        
+        <!-- Mountain/Horizon Silhouette (Optional for depth) -->
+        <div class="landscape"></div>
     </div>
 
-    <!-- Vignette / Grain Overlay -->
-    <div class="vignette"></div>
-    <div class="scanlines"></div>
+    <!-- Text Container -->
+    <div class="text-container">
+        <div class="message" id="msg-text"></div>
+    </div>
 
+    <!-- JS -->
     <script src="script.js"></script>
 </body>
 </html>
