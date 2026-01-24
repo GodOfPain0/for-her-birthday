@@ -200,3 +200,6 @@ startBtn.addEventListener('click', () => {
 
     tl.play();
 });
+
+bgMusic.volume = 0;
+gsap.to(bgMusic, { volume: 0.5, duration: 5 });
