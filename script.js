@@ -192,3 +192,11 @@ document.addEventListener('DOMContentLoaded', () => {
         tl.play();
     });
 });
+
+startBtn.addEventListener('click', () => {
+    gsap.to(startScreen, { opacity: 0, duration: 1, onComplete: () => startScreen.style.display = 'none' });
+    
+    bgMusic.play().catch(e => console.log("Audio play failed:", e));
+
+    tl.play();
+});
