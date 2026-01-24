@@ -109,8 +109,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Sunrise Texts
     // "Bugün senin günün aşkım."
     tl.add(addTextToTl("Bugün senin günün aşkım.", 2, 3), "sunrise+=1");
-    // "Doğum günün kutlu olsun."
-    tl.add(addTextToTl("Doğum günün kutlu olsun.", 2, 3), ">-0.5");
+    // "Doğum günün kutlu olsun Dünyammm."
+    tl.add(addTextToTl("Doğum günün kutlu olsun Dünyammm.", 2, 3), ">-0.5");
+    // "Yeni yaşının uğurlu olma dileğiyle aşk kadınım benim"
+    tl.add(addTextToTl("Yeni yaşının uğurlu olma dileğiyle aşk kadınım benim.", 2, 4), ">-0.5");
 
 
     // 3. DAY TO SUNSET
@@ -158,10 +160,10 @@ document.addEventListener('DOMContentLoaded', () => {
     tl.to(landscape, { filter: 'brightness(0.15)', duration: 6 }, "moonrise");
 
     // Moonrise Texts
-    // "İyi ki varsın."
-    tl.add(addTextToTl("İyi ki varsın birtanemm", 2, 3), "moonrise+=3");
+    // "İyi ki varsın, iyi ki benimlesin."
+    tl.add(addTextToTl("İyi ki varsın, iyi ki benimlesin.", 2, 3), "moonrise+=3");
     // "İyi ki hayatımdasın."
-    tl.add(addTextToTl("İyi ki hayatımdasın", 2, 3), ">-0.5");
+    tl.add(addTextToTl("İyi ki hayatımdasın.", 2, 3), ">-0.5");
 
     // 5. FINALE
     // Final text persists
@@ -172,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
         opacity: 0, 
         duration: 1, 
         onComplete: () => { 
-            msgText.innerHTML = "Bunu sen gül diye yaptım.<br><br>Seni çok çok seviyorummmm 🤍."; 
+            msgText.innerHTML = "Bunu sen gül diye yaptım.<br><br>İyi ki varsın."; 
         }
     }, "finale");
     
