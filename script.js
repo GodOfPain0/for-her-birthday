@@ -159,9 +159,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Moonrise Texts
     // "İyi ki varsın."
-    tl.add(addTextToTl("İyi ki varsın.", 2, 3), "moonrise+=3");
+    tl.add(addTextToTl("İyi ki varsın birtanemm", 2, 3), "moonrise+=3");
     // "İyi ki hayatımdasın."
-    tl.add(addTextToTl("İyi ki hayatımdasın.", 2, 3), ">-0.5");
+    tl.add(addTextToTl("İyi ki hayatımdasın", 2, 3), ">-0.5");
 
     // 5. FINALE
     // Final text persists
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
         opacity: 0, 
         duration: 1, 
         onComplete: () => { 
-            msgText.innerHTML = "Bunu sen gül diye yaptım.<br><br>İyi ki varsın."; 
+            msgText.innerHTML = "Bunu sen gül diye yaptım.<br><br>Seni çok çok seviyorummmm 🤍."; 
         }
     }, "finale");
     
